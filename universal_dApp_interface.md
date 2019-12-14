@@ -170,11 +170,17 @@ _Note: From the implementor's perspective of this more advanced IDL, the pre-con
 Automatic GUI Generation
 -------------
 
-Now with an action struct created, it is quite trivial to automatically generate GUI elements which take in values of the corresponding type (Int, String, ...).
+Now with an action struct created, it is trivial to automatically generate GUI elements.
 
-Potentially expanding on the the IDL by allowing developers to specify ideal GUI elements for an input could be useful.
+A user will be provided with a list of actions based off of the actions defined in the interface definition. When a user selects an action, then in essence they are selecting the corresponding struct/datatype which we will use to validate their input.
 
-Example pseudocode:
+Now the parser simply needs to read the types of the fields of the struct, and with that build graphical user interface elements which allow the user to submit values of the corresponding type (Int, String, ...). Furthermore the pre-conditions can be represented in textual form above each GUI element, thereby explaining to the user what is valid input.
+
+Once the values are submitted by the user, they can then be used as input to the struct's constructor (`new()`). If the user submitted valid input, then everything is good, else the errors can be returned and then displayed in textual format to the user.
+
+But we can still do a bit better. By expanding on our IDL we can allow developers to specify ideal GUI elements for an input. This would improve the auto-generation process in general.
+
+Example pseudo-code:
 ```
     # lockAmount.GUI: Slider
     let lockAmount = Int.range(1,10);
@@ -183,14 +189,14 @@ Example pseudocode:
     let lockPassword = String.maxSize(35);
 
 ```
+With that all said and done we are now able to automatically generate GUI and verify that the inputs provided are valid.
 
-However there is one final piece missing with our IDL up to this point. We can generate GUIs automatically and validate the user's input from the GUI, but we haven't yet specified how the values are to be used in performing the actual action (submitting the transaction with the given inputs).
+However there is one final piece missing in our definition. We have not yet specified how the inputs are to be used in performing the actual action (submitting the transaction with the given inputs).
 
 Action Submission
 -------------
 
-Here we specify the specifics of how a transaction is created using the inputs.
-
+Now we will have to encode how the transaction is to be created using the inputs. This most often is easiest using a json-like format and specifying all the relevant parts of a transaction.
 
 Here is a pseudo-example of how this could work in the IDL:
 
@@ -202,7 +208,7 @@ Here is a pseudo-example of how this could work in the IDL:
 
     action lockFunds(lockAmount, lockPassword) {
         return ({
-                smartContract = dApp.context.smartContract,
+                script = dApp.smartContract("lockingSmartContact.sc"),
                 register.R4 = lockPassword,
                 amount = lockAmount
             })
@@ -210,28 +216,48 @@ Here is a pseudo-example of how this could work in the IDL:
 
 
 ```
-_(As can be seen, I also included the idea of importing the smart contract which has been included within the same `.dApp` that this interface definiton is in.)_
+_(As can be seen, I also included the concept of using the smart contract which is included as a separate file named `lockingSmartContract.sc` within the same `.dApp` package that this interface definition a part of.)_
 
-This then can be translated into a new method for creating the action's transaction on our `lockFundsAction` struct:
+This then can be translated into a new method for building the action's transaction for our `lockFundsAction` struct:
 
 ```
     impl LockFundsAction {
-        fn createTransaction (self) {
-            let tx = createAndSignTransactionWithData({
-                        smartContract = dApp.context.smartContract,
+        fn buildTransaction (self) -> Transaction {
+            // buildAndSignTransactionWithData is just a placeholder function for an equivalent that works with one's given toolchain
+            let tx = buildAndSignTransactionWithData({
+                        script = dApp.smartContract("lockingSmartContact.sc"),
                         register.R4 = self.lockPassword,
                         amount = self.lockAmount});
             return(tx);
         }
     }
-
 ```
 
+At this point in time, our action struct now has the ability to be created (with all of the input validity checking that goes with it), and then be "performed" by building the corresponding transaction "action" with all of the data used as specified. 
 
+Thus we have created a generalized interface for interacting with the dApp that is easily usable by both automatically generate GUIs as well as libraries/frameworks which can plug right in and provide an entire development environment.
+
+It is therefore possible (with an IDL like this) to one day have wallets allow users to import a `.dApp` file, have guaranteed input validity, automatically generate the GUI, and then build the transaction which is passed on to the wallet and finally submitted to the network. A much more idealized future compared to what we have today in the dApp world.
+
+Packaging Other Useful Files
+----------
+
+One last point to dive into before we conclude, is the fact that we can also package other files to enrich the dApp even further. Some basic possibilities:
+    - Configuration file 
+    - Icons
+    - Formal specification/proofs (which hopefully are runnable) 
+    - Package signature by the author
+    - ...
+
+In the configuration file we can include descriptive elements such as the dApp title, version, description, copyright, author details, or any technical details that are relevant (ex. the language of the smart contract or formal spec, specifying runtime/parser, ...).
+
+With each useful file/piece of information, we enrich the dApp with more context and provide more possibilities of what can be done.
 
 Going Forward
 ----------
 
-This document is primarily a high-level overview of the concept of a Universal dApp Interface & Package Standard, rather than a specific definition of one. Chances are that each given platform in the blockchain space would likely have to create such a standard for themselves based on the requirements/most popular tooling in the ecosystem at hand. Nonetheless, it is my general contention that on the high-level, such a standard is one of the better ways forward for dApp development at large, even if each ecosystem has it's own customizations on the specifics.
+This document is primarily a high-level overview of the concept of a Universal dApp Interface & Package Standard, rather than a specific definition of one. Chances are that each given platform/project will have to create a custom standard for themselves based on the requirements/tooling in the ecosystem at hand. Nonetheless, it is my general contention that on the high-level such a standard is one of the better ways forward for dApp development at large.
 
-A few of us in the Ergo community have already began to ruminate on how a Universal dApp Interface & Package Standard can be integrated within [AppKit](https://github.com/aslesarenko/ergo-appkit) to achieve `.dApp` support in the primary cross-language polyglot dApp library for the Ergo ecosystem, and also how it could be integrated with [Stainless](https://github.com/epfl-lara/stainless) to improve the formal verification process of smart contracts.
+A few of us in the [Ergo](https://ergoplatform.org) community have already began to ruminate on how a Universal dApp Interface & Package Standard could be integrated within [AppKit](https://github.com/aslesarenko/ergo-appkit) to achieve `.dApp` support in the primary cross-language polyglot dApp library for the Ergo ecosystem, and also how it could be integrated with [Stainless](https://github.com/epfl-lara/stainless) to improve the formal verification process of smart contracts. In short, the possibility of implementing such a dApp standard may not be that far off in the future, which is quite exciting from my perspective.
+
+I have no doubt that there are major improvements possible on my design of the IDL or the implementation of such (this idea is very nascent), so please feel free to send me a message if you have any thoughts/ideas/criticisms on this.
