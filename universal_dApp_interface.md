@@ -265,3 +265,5 @@ This document is primarily a high-level overview of the concept of a Universal d
 A few of us in the [Ergo](https://ergoplatform.org) community have already began to ruminate on how a Universal dApp Interface & Package Standard could be integrated within [AppKit](https://github.com/aslesarenko/ergo-appkit) to achieve `.dApp` support in the primary cross-language polyglot dApp library for the Ergo ecosystem, and also how it could be integrated with [Stainless](https://github.com/epfl-lara/stainless) to improve the formal verification process of smart contracts. In short, the possibility of implementing such a dApp standard may not be that far off in the future, which is quite exciting from my perspective.
 
 I have no doubt that there are major improvements possible on my design of the IDL (this idea is very nascent), so please feel free to send me a message if you have any thoughts/questions/ideas/criticisms on this.
+
+[- Robert Kornacki](mailto:robk@chaski.network)
