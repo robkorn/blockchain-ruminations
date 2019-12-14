@@ -247,11 +247,11 @@ Packaging Other Useful Files
 ----------
 
 One last point to dive into before we conclude, is that we can also add other files to the package to enrich the dApp even further. Some basic possibilities:
-    - Configuration file 
-    - Icons
-    - Formal specification/proofs (which anyone can validate) 
-    - Package signature by the author
-    - ...
+- Configuration file 
+- Icons
+- Formal specification/proofs (which anyone can validate) 
+- Package signature by the author
+- ...
 
 In the configuration file we can include descriptive elements such as the dApp title, version, description, copyright, author details, or any technical details that are relevant (ex. the language of the smart contract or formal spec, specifying runtime/parser, ...).
 
