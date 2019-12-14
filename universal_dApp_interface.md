@@ -170,17 +170,31 @@ Here is a pseudo-example of how this could work in the IDL:
     let lockPassword = String.maxSize(35);
 
     action lockFunds(lockAmount, lockPassword) {
-        createTx ({
-            smartContract = dApp.context.smartContract,
-            register.R4 = lockPassword,
-            amount = lockAmount
-        })
+        return ({
+                smartContract = dApp.context.smartContract,
+                register.R4 = lockPassword,
+                amount = lockAmount
+            })
     }
 
 
 ```
+_(As can be seen, I also included the idea of importing the smart contract which has been included within the same `.dApp` that this interface definiton is in.)_
 
-As can be seen, I also included the idea of importing the smart contract which has been included within the same `.dApp` that this interface definiton is in.
+This then can be translated into a new method for creating the action's transaction on our `lockFundsAction` struct:
+
+```
+    impl LockFundsAction {
+        fn createTransaction (self) {
+            let tx = createAndSignTransactionWithData({
+                        smartContract = dApp.context.smartContract,
+                        register.R4 = self.lockPassword,
+                        amount = self.lockAmount});
+            return(tx);
+        }
+    }
+
+```
 
 
 
