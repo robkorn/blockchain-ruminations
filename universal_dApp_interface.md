@@ -9,7 +9,7 @@ One of the key issues in our time in dApp development is the fact that after the
 As there are no standards, we have no ability to create generalized frameworks or tooling around dApps which allow people to reuse the work of others or allow a dApp to be a modular entity that can be imported and used within different environments.
 
 Instead we find ourselves simply throwing smart contracts on-chain, creating custom UIs for each one, and then ostensibly calling the combination of the two pieces a "dApp". 
-Thus we are forever chained to an endless myriad of custom made user interfaces (often which tend to be centralized on a website) which are not reusable or inter-operable. 
+Thus we are forever chained to an endless myriad of custom made user interfaces (often which tend to be centralized on websites) which are not reusable or inter-operable. 
 
 This severely impairs the ability for dApps to be easily distributed/accessed, or have actual longevity past the lifespan of a given implementation. 
 As such we are left spinning in circles with our present model of dApps.
@@ -50,7 +50,7 @@ Packaging The dApp To Achieve Wide Usage
 Furthermore, since we are abstracting out dApp out of any single instantiation by means of an interface definition, we can now also package our dApp in a generalizable and standardized way.
 All of the data/files can be put together in a pre-defined package format (say with the `.dApp` extension) which allows for a dApp to be easily utilized by any and all `.dApp` supporting tooling.
 
-In the future wallets could allow importing of `.dApp` packages which automatically generate GUIs right in the wallet itself that users utilize to interact with the dApp. This makes it considerably easier for dApps to be tested, shared, and thus decentralizing the front-end of dApps (which often rely on webpages and/or only provide a single front-end period that is tied to a specific wallet).
+In the future wallets could allow importing of `.dApp` packages which automatically generate GUIs right in the wallet itself that users utilize to interact with the dApp. This makes it considerably easier for dApps to be  used, tested, and shared. Thus we can begin to decentralize and broaden the front-end of dApps substantially (which often rely on webpages and/or only provide a single front-end that is tied to a specific wallet).
 
 In addition, there is a lot to be gained in the realm of polished custom-made dApp front-ends from this setup as well. If a developer obtains a `.dApp`, they could use a library/framework which plugs right in and allows them to use css/html/js to specify the design & the flow of the GUI manually.
 The developer also has the guarantee that all user-provided inputs are valid before submitting the transaction, thus simplifying the entire development process while enriching the experience with more safety.
@@ -71,12 +71,13 @@ Defining Valid Inputs
 
 At the core, the interface definition relies on specifying pre-conditions. In other words, we are defining which inputs are allowed to be submitted to our contract. Therefore the name "interface definition".
 
+
 Having pre-conditions defined for your dApp is quite useful, as it forces you as the developer to really think about specifying the exact inputs allowed (thereby lowering the chance that weird edge-cases can happen due to using broad types like Int32).
 Furthermore, these pre-conditions also directly map onto pre-conditions used in automated formal verification (which allow for shrinking the statespace to only the valid inputs that are possible).
-And lastly, specifying pre-conditions is a requirement for all of the other fanciful features which we will get to later on.
 
+Specifying pre-conditions is the first step in writing our interface definition.
 The below pseudo-code example displays one way which pre-conditions could be encoded via our imaginary IDL.
-```
+```rust
 let amountToSend = Int.range(0,1500);
 
 let stringChoice = String.oneOf(["Yes", "No", "Maybe"]);
@@ -89,12 +90,12 @@ As can be seen, this is quite simple to understand and should be trivial to impl
 These functions used above can simply evaluate to boolean functions which take in the expected value as input and return true/false whether the input is valid.
 
 For more complex contracts, the IDL may need to be more powerful and allow the chaining of functions for defining pre-conditions.
-```
+```rust
 let goodString = String.ofLength(18).noElement("x");
 ```
 
 Furthermore, there may situations where a pre-condition needs to rely upon the the value of another input. Ideally the IDL would work as such:
-```
+```rust
 let favoriteNumber = Int.range(0, 100);
 
 let choicesToChooseFrom = Int.oneOf([favoriteNumber, 25, 50, 100]);
@@ -114,7 +115,7 @@ Going forward, we would like to be able to generate an input validator based off
 For most languages, this is most easily encoded via the use of a datatype/struct.
 
 The datatype's constructor can be made to accept the pre-conditions' types as inputs, and then encodes their boolean function checks within the constructor to verify that all of the inputs are valid. 
-Tus the constructor either returns an Optional value of the successfully created datatype, or an Error specifying which of the pre-conditions failed to validate (and the corresponding input value that made it fail). In this way, if the datatype succeeds in being constructed, the developer has the guarantee (based off of the interface definition spec) that the inputs are all valid.
+Thus the constructor either returns an Optional value of the successfully created datatype, or an Error specifying which of the pre-conditions failed to validate (and the corresponding input value that made it fail). In this way, if the datatype succeeds in being constructed, the developer has the guarantee (based off of the interface definition spec) that the inputs are all valid.
 
 However there is one key thing missing in our interface definition to allow for this kind of scheme to work. We have defined all of the required inputs possible for the given smart contract, however we have not considered the fact that only a sub-set of these inputs may be required for any given _action_ which a participant in a smart contract can perform.
 
@@ -123,7 +124,7 @@ As such we have to define said actions, which in essence are simply a grouping o
 A dApp will often have more than one action, but we will keep things simple and explore what defining a single one would look like.
 
 IDL pseudocode:
-```
+```rust
 let lockAmount = Int.range(1,10);
 let lockPassword = String.maxSize(35);
 let betterLockPassword = String.minSize(lockPassword.length + 5);
@@ -135,7 +136,7 @@ What this means is that an action called `lockFunds` is defined as a valid actio
 
 This IDL can then be transformed into a struct/datatype via meta-programming as shown in the pseudo-code below:
 
-```
+```rust
 struct LockFundsAction = {
     lockAmount: Int,
     lockPassword: String,
@@ -186,7 +187,7 @@ Once the values are submitted by the user, they can be used as input to the acti
 But we can still do a bit better. By expanding on our IDL we can allow developers to specify ideal GUI elements for an input. This would improve the auto-generation process if we wish to add such enhanced support.
 
 Example pseudo-code:
-```
+```rust
 # lockAmount.GUI: Slider
 let lockAmount = Int.range(1,10);
 
@@ -195,7 +196,7 @@ let lockPassword = String.maxSize(35);
 ```
 With that all said and done we are now able to automatically generate GUI and verify that the inputs provided are valid.
 
-However there is one final piece missing to make this work truly flawlessly. We have not yet specified how the inputs are to be used in performing the actual action (building a transaction with the given inputs).
+However there is one final piece missing to make this work flawlessly. We have not yet specified how the inputs are to be used in performing the actual action (building a transaction with the given inputs).
 
 Performing An Action
 -------------
@@ -204,7 +205,7 @@ To perform an action we will have to encode how a transaction is to be created u
 This often is easiest using a json-like format and specifying all the relevant parts of a transaction.
 
 Here is a pseudo-example of how this could work in our IDL:
-```
+```rust
 # lockAmount.GUI: Slider
 let lockAmount = Int.range(1,10);
 # lockPassword.GUI: InputBox
@@ -224,7 +225,7 @@ To put it into words, our `lockFunds` action takes in 2 inputs, `lockAmount` and
 
 This then can be translated into a new method for building the transaction for our `LockFundsAction` struct:
 
-```
+```rust
 impl LockFundsAction {
     fn buildTransaction (self) -> Transaction {
         // buildAndSignTransactionWithData is just a placeholder function for an equivalent that works with one's given ecosystem/toolchain
@@ -241,7 +242,7 @@ At this point in time, our action struct now can be created (with all of the inp
 
 Thus we have created a generalized interface for interacting with the dApp that is easily usable by both automatically generate GUIs as well as libraries/frameworks which can plug right in and provide an entire development environment.
 
-It is therefore possible (with an IDL like this) to one day have wallets allow users to import a `.dApp` file, automatically generate the GUI, guarantee input validity, and then build the transaction which is finally passed on to the wallet to be submitted to the network seamlessly. A much more idealized future compared to what we have today in the dApp world if I do say so myself.
+It is therefore possible (with an IDL like this) to one day have wallets allow users to import a `.dApp` file, automatically generated the GUI, guarantee input validity, and then build the transaction which is finally passed on to the wallet to be submitted to the network seamlessly. A much more idealized future compared to what we have today in the dApp world if I do say so myself.
 
 Packaging Other Useful Files
 ----------
@@ -263,6 +264,8 @@ Going Forward
 This document is primarily a high-level overview of the concept of a Universal dApp Interface & Package Standard, rather than a specific definition of one. Chances are that each given platform/project will have to create a custom standard for themselves based on the requirements/tooling in the ecosystem at hand. Nonetheless, it is my general contention that on the high-level such a standard is one of the better ways forward for dApp development at large.
 
 A few of us in the [Ergo](https://ergoplatform.org) community have already began to ruminate on how a Universal dApp Interface & Package Standard could be integrated within [AppKit](https://github.com/aslesarenko/ergo-appkit) to achieve `.dApp` support in the primary cross-language polyglot dApp library for the Ergo ecosystem, and also how it could be integrated with [Stainless](https://github.com/epfl-lara/stainless) to improve the formal verification process of smart contracts. In short, the possibility of implementing such a dApp standard may not be that far off in the future, which is quite exciting from my perspective.
+
+A quick note in regards to automatic GUI generation; There are cases of developing very complex dApps which use significant off-chain computation to build the intricate inputs required by the smart contract which may be (near) impossible to replicate manually as a human being. In such cases, automatic GUI generation would likely not be usable for these dApps. Nonetheless when facing such complexity in development then using an interface definition and gaining the rest of the benefits it provides (especially input validity checking) is a very strong selling point.
 
 I have no doubt that there are major improvements possible on my design of the IDL (this idea is very nascent), so please feel free to send me a message if you have any thoughts/questions/ideas/criticisms on this.
 
