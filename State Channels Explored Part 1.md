@@ -40,5 +40,3 @@ There genuinely is a lot that's possible with the basic model explained above. T
 All random events must be based off of the original seed, the results of the actions of the participants, or both together. These pieces of data must be run through a deterministic (pure) function which spits out a "random" value to then be used by all players. Every part of the protocol which requires randomness that can not be gamed must utilize opposing incentives of participants along with randomness effected by player actions.
 
 And this only covers the fairness of the inter-protocol actions which are to be accounted for. There are also meta-incentives (incentives outside of the single instantiation/state channel but instead the stability of the protocol in relation to the global state held on the blockchain) which make designing these protocols even more challenging.
-
-In the next episode we'll get our first taste of the actual fun stuff: Examining Meta-Incentives And The Reward Problem.
