@@ -1,7 +1,7 @@
 Urbit: The Blockchain State Channel Solution No One Expected
 ==============================
 
-For the uninitiated, state channels are the concept of  performing protocols by interacting with other users of a blockchain without actually using the blockchain itself for every action. To be precise, the blockchain is not used during the execution of the protocol, but only for opening and closing the state channel (technically your state channel can have multiple phases which may require more txs to snapshot the state at a given point in time, but that is besides the point).
+For the uninitiated, state channels allow for users of a blockchain to perform protocols together without actually using the blockchain itself for every action. To be precise, the blockchain is not used during the execution of the protocol, but only for opening and closing the state channel (technically your state channel can have multiple phases which may require more txs to snapshot the state at a given point in time, but that is besides the point).
 
 The most popular form of state channel that you may have heard of is the Lightning Network on top of Bitcoin. The LN is a specific type of state channel called a payment channel. 
 
@@ -58,7 +58,3 @@ As can be seen, Urbit very naturally fits as if it was designed to do so in the 
 This means that Urbit can theoretically be a part in aiding blockchains like Ethereum to scale by providing an identity/messaging/computation layer to run state channels on. On the flip side, this kind of scheme provides Urbit users the ability to run more complicated p2p protocols which are inherently low-trust/rely on distribution of funds based on events that occur without needing to trust a 3rd-party/entity.
 
 Whether all of this will be looked into/implemented at all, only time will tell. Nonetheless I believe there is a decent amount of potential here which hasn't been tapped into yet by any other project I've seen.
-
-If anyone has any thoughts/comments on the topic I'd be happy to hear from you.
-
-~mocrux-nomdep
