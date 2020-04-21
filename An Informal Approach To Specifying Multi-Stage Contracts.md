@@ -13,8 +13,8 @@ This contract allows for a user to initiate an on-chain auction for a NFT/single
 
 
 ## ToC
-1. [Bootstrap Stage](<#Bootstrap Stage>)
-2. [Auction Stage](<#Auction Stage>)
+1. [Bootstrap Stage](<#bootstrap-stage>)
+2. [Auction Stage](<#auction-stage>)
 
 
 ## Bootstrap Stage
@@ -22,7 +22,7 @@ This contract allows for a user to initiate an on-chain auction for a NFT/single
 This stage allows a user to initiate the auction. It requires that they provide their NFT and a box with Erg which represents the starting bid. There are no hard-coded values, registers, or path conditions because this is the bootstrap stage and thus there is no contract yet.
 
 ### List Of Paths
-- [Initiate Auction Path](<#Initiate Auction Path>)
+- [Initiate Auction Path](<#Initiate-Auction-Path>)
 
 
 ### Initiate Auction Path
@@ -37,7 +37,7 @@ This stage allows a user to initiate the auction. It requires that they provide 
 
 
 #### Leads To
-[Auction Stage](<#Auction Stage>)
+[Auction Stage](<#Auction-Stage>)
 
 ---
 
@@ -53,8 +53,8 @@ In this stage the NFT is held up for auction and anyone who has enough Ergs can 
 - R4: The current highest bidder's public key
 
 ### List Of Paths
-- [Bid Path](<#Bid Path>)
-- [Conclude Auction Path](<#Conclude Auction Path>)
+- [Bid Path](<#Bid-Path>)
+- [Conclude Auction Path](<#Conclude-Auction-Path>)
 
 
 ### Bid Path
@@ -77,7 +77,7 @@ This path recurses the box back into the Auction stage with the new Ergs held in
 
 
 #### Leads To
-[Auction Stage](<#Auction Stage>)
+[Auction Stage](<#Auction-Stage>)
 
 
 ### Conclude Auction Path
@@ -123,15 +123,15 @@ With all of that said, let's look at the markdown of these informal specs to und
 Contract preamble
 
 ## ToC
-1. [Bootstrap Stage](<#Bootstrap Stage>)
-2. [X Stage](<#X Stage>)
+1. [Bootstrap Stage](<#Bootstrap-Stage>)
+2. [X Stage](<#X-Stage>)
 
 ## Bootstrap Stage
 Preamble of how the contract is bootstrapped. There are no hard-coded values, registers,
 or path conditions because this is the bootstrap stage and thus there is no contract yet.
 
 ### List Of Paths
-- [Y Path](<#Y Path>)
+- [Y Path](<#Y-Path>)
  
 ### Y Path
 Preamble
@@ -149,7 +149,7 @@ Preamble
 
 
 #### Leads To
-[X Stage](<#X Stage>)
+[X Stage](<#X-Stage>)
 
 ---
 
@@ -165,7 +165,7 @@ Preamble
 
 
 ### List Of Paths
-- [Y Path](<#Y Path>)
+- [Y Path](<#Y-Path>)
  
 ### Y Path
 Preamble
