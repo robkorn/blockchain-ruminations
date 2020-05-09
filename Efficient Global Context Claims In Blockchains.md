@@ -17,7 +17,7 @@ Now, if we implement software to streamline this task automatically and make it 
 
 This also acts as a superb way for users to come into the ecosystem and earn Erg while providing a truly pivotal service with a low barrier of entry. Once the utxo-set grows very large and the claims become more complex, we could even imagine "verification pools" coming about, where users are given a segment of the UTXO-set to keep track of/process and receive a small portion of any rewards that their "verification pool" wins. This opens up a lot of doors of opportunity.
 
-With what I've outlined above, we have the ability to make specific positive and negative claims about the global state of the blockchain and every token and contract on it. Very powerful. However, we can do even more which I alluded to in the beginning.
+With what I’ve outlined above, we have the ability to make any claim at all, about any token or piece of data in any register that is part of any dApp on the entire blockchain. Very powerful. However, we can do even more which I alluded to in the beginning.
 
 #### Global Context Data Accumulators
 
