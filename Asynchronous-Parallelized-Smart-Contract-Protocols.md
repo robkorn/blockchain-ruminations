@@ -1,0 +1,35 @@
+## Synchronous/Async Actions In The Extended UTXO Model
+
+In the extended UTXO-model we can define that any action in a protocol which requires that the user spends their own boxes in addition to other boxes with other data/tokens as a "synchronizing action". If the action updates the global/shared smart contract protocol state (by spending a UTXO that holds that state), we can dub this a "protocol synchronizing action". If this action updates only a sub-set of users'/protocol boxes which are not considered the global/shared smart contract protocol state, then we can dub this a "localized synchronizing action".
+
+Trying to achieve parallelization in the EUTXO model being our goal, we must thus focus on minimizing all synchronizing actions at all costs. Furthermore, there is a hierarchy of synchronization where minimizing protocol synchronizing actions tends to be a greater priority than localized synchronizing actions. This is due to the fact several localized synchronizing actions can be run in parallel by subsets of users which can then simplify/speed up a protocol synchronizing action due to pre-processing much of the require state transition first.
+
+In opposition to synchronized actions, we also have "asynchronous actions". These are actions which only spends the user's boxes and as such do not block other users (because they are not fighting to try and spend the same box(es)). Our goal is to then maximize the number of asynchronous action in the protocol so that we run into far less blocking.
+
+Luckily in Ergo we have data-inputs which can be considered the tool-of-choice which super-charge asynchronous actions with a lot more power in the extended UTXO model. Data-inputs provide us with the ability to read state from any other box in the protocol without spending it. This means we can perform asynchronous actions based off of the results of other synchronous or asynchronous actions that others have made. This provides us with the power to enable users to perform the majority of the smart contract protocol asynchronously, while only synchronizing when needed in order to achieve a local or protocol synchronized state.
+
+(Note localized synchronizing actions can also rely on data-inputs of the results of asynchronous/other localized synchronizing actions, allowing for protocols to work it's way up from the bottom of the "action tree" all the way up to the protocol synchronizing actions)
+
+To date no other blockchain has the primitives implemented to allow this granular approach to smart contract protocol design with asynchronous actions as a first-class citizen.
+
+Thus with this high-level overview of parallelization in the extended UTXO model, I would like to emphasize a brand new design pattern that enables maximizing asynchronous actions as much as possible.
+
+
+## User Async Emission Box Design Pattern
+
+As mentioned in a previous thread about [secure user entry/bootstrapping in protocols](https://www.ergoforum.org/t/secure-user-entry-bootstrap-funneling-in-multi-stage-protocols/228), we have a design pattern available for us to guarantee that a user starts in a valid initial state in our smart contract protocol. This is done by issuing the user a "participant token" which represents that they were bootstrapped properly to a correct init state. When designing parallel protocols, using this participant token is key, because it effectively acts as our sole invariant with which we can build all of our other assumptions on top of.
+
+This participant token issuing (whether using a trusted or trustless bootstrap funnel) is in fact the act of "synchronizing" that the user goes through. The user must spend a token emission box in order to acquire the participant token and thus is generally a localized synchronous action (which references the protocol state as a data-input at the same time in order to set the user into a valid initial state).
+
+Given that this is a synchronizing action which guarantees the user is bootstrapped properly, we thus can ensure that every future action the user takes in the protocol, whether async or synchronous, is perpetually valid. Now what I will share today that is novel is the idea we can bootstrap/sync the user into a new type of initial stage, "User Async Emission" stage. (in more complex protocols this stage will likely have other spending paths as well on top of this)
+
+The bootstrap action that the user goes through forces him/her to mint i64 total new tokens (of a single id) into a UTXO that is locked under the "User Async Emission" contract. This contract only allows the user to emit tokens when they use other boxes from the same protocol as data-inputs together with their own boxes as inputs.
+
+What this means is that this contract is only allowed to emit these tokens if the user can find other data-inputs part of the smart contract protocol that meet certain requirements/are at a predefined state (together with the user providing required input boxes). As such we have a framework which enables users to issue completely asynchronous actions, and due to the async token emission box design pattern, the emitted tokens act as 100% unforgable proof that the asynchronous action was performed during a valid state of the smart contract protocol. There is no other possible way for the user to emit said async tokens because they were all minted during the user's bootstrap/synchronization action and directly locked upon minting.
+
+As such, we have the ability for users of our smart contract protocols to perform actions asynchronously based on protocol synchronized state, localized synchronized state, or other asynchronous states, while having a 100% guarantee based off of the user's unique async token which represents an unforgable proof that this async action both occured and occured during a valid state (ex. during a specific epoch).
+
+Thus whenever the smart contract protocol needs to ensure that a given async action a user took (which produces a new box with new state) is valid, all that needs to be done is to use the "Aync Emmited" box + the "User Async Emission"
+box as data-inputs and verifying that the "Aync Emmited" box has the same async token id as the "User Async Emission", and the "User Async Emission" box has a valid participant token inside of it. If these two checks verify as true, then it is guaranteed that the async action which created the "Aync Emmited" box is 100% valid.
+
+With this design pattern we now have the freedom to pursue implementing async actions in our smart contract protocols which are proved to be correct/valid by the very fact that the "Async Emitted" box exists. I believe this will be a powerful tool that we can utilize to build intriguing protocols never possible before on any other blockchain, however the obvious complexity will likely make this a topic of research/implementation for the further future.
